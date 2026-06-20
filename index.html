@@ -25,6 +25,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 
+    <!-- Leaflet map (simple pin) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <!-- Tailwind (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -440,13 +444,8 @@
                         Buka Lokasi
                     </a>
 
-                    <!-- embed map (lazy) -->
-                    <div class="mt-6 overflow-hidden rounded-2xl border-4 border-cream shadow-sm">
-                        <iframe title="Peta Lokasi" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                            class="w-full h-56 block"
-                            style="filter:sepia(.15) saturate(1.05)"
-                            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3767.4197747694234!2d106.7406111!3d-6.5805833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNsKwMzQnNTAuMSJTIDEwNsKwNDQnMjYuMiJF!5e1!3m2!1sen!2sid!4v1781939885136!5m2!1sen!2sid"></iframe>
-                    </div>
+                    <!-- embed map (leaflet, simple) -->
+                    <div id="leafletMap" class="mt-6 overflow-hidden rounded-2xl border-4 border-cream shadow-sm w-full h-52"></div>
                 </div>
             </div>
         </section>
@@ -790,6 +789,26 @@
             const reset = () => { clearInterval(timer); start(); };
             dots.forEach((d, k) => d.addEventListener('click', () => { show(k); reset(); }));
             show(0); start();
+        })();
+
+        /* ---------- leaflet map (simple pin) ---------- */
+        (function(){
+            const LAT = -6.5805833, LNG = 106.7406111;
+            const map = L.map('leafletMap', {
+                center: [LAT, LNG], zoom: 16,
+                zoomControl: false, scrollWheelZoom: false,
+                dragging: false, doubleClickZoom: false,
+                attributionControl: false
+            });
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19
+            }).addTo(map);
+            const icon = L.divIcon({
+                className: '',
+                html: '<div style="width:34px;height:34px;background:#c98b86;border:3px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 12px rgba(201,139,134,.6)"></div>',
+                iconSize: [34, 34], iconAnchor: [17, 34]
+            });
+            L.marker([LAT, LNG], { icon }).addTo(map);
         })();
     </script>
 </body>
