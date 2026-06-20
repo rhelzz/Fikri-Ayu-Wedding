@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Fikri & Ayu - Undangan Pernikahan</title>
+    <link rel="icon" type="image/svg+xml" href="svg/sprig.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- Tailwind (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#f8f2e7',
+                        sand:  '#f1e8d7',
+                        beige: '#e8dcc7',
+                        blush: '#e7c7c0',
+                        peach: '#f1d6bf',
+                        rose:  '#c98b86',
+                        gold:  '#c2a36b',
+                        sage:  '#9aa97f',
+                        mocha: '#6f5f4d',
+                        cocoa: '#473c30',
+                    },
+                    fontFamily: {
+                        script: ['"Great Vibes"', 'cursive'],
+                        serif:  ['"Cormorant Garamond"', 'serif'],
+                        sans:   ['"Jost"', 'sans-serif'],
+                    },
+                },
+            },
+        };
+    </script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        body { -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+
+        /* ============================================================
+           AUTO INTRO VIDEO (pinned) — DO NOT REMOVE
+           Flow: 3s countdown → video auto-plays while the page
+           auto-scrolls in sync → then auto-scrolls into the website.
+           Tall .video-scroll gives the scroll travel; inner .video-pin
+           is sticky so the video stays fixed full-screen during it.
+           ============================================================ */
+        .video-scroll { position: relative; height: 180vh; background:#f8f2e7; }
+        .video-pin {
+            position: sticky; top: 0;
+            height: 100vh; height: 100svh;
+            overflow: hidden; background:#f8f2e7;
+        }
+        /* slightly oversize the video + pull content up 1px so no black/blank seam shows at the transition */
+        .video-pin video {
+            position:absolute; top:-1px; left:0;
+            width:100%; height:calc(100% + 2px);
+            object-fit:cover; display:block;
+        }
+        main { position: relative; z-index: 10; margin-top: -1px; }
+
+        /* ---- opening cover: loading state, then the "Buka Undangan" tap that unlocks the music ---- */
+        .opening {
+            position:fixed; inset:0; z-index:60;
+            display:flex; align-items:center; justify-content:center; padding:28px;
+            background:radial-gradient(120% 90% at 50% 0%, #fbf6ec 0%, #f3e8d6 55%, #ecdcc4 100%);
+            transition:opacity .6s ease, visibility .6s ease;
+        }
+        .opening.hide { opacity:0; visibility:hidden; }
+        .op-card { width:100%; max-width:340px; text-align:center; }
+        .op-eyebrow { font-family:'Jost',sans-serif; font-size:.7rem; letter-spacing:.4em; text-transform:uppercase; color:#6f5f4d; }
+        .op-names { font-family:'Great Vibes',cursive; color:#473c30; line-height:1.05; font-size:clamp(2.9rem,15vw,4rem); margin-top:8px; }
+        .op-divider { width:78px; height:1px; background:#c2a36b; margin:18px auto 16px; }
+        .op-date { font-family:'Jost',sans-serif; font-size:.72rem; letter-spacing:.34em; text-transform:uppercase; color:#6f5f4d; }
+        .op-btn {
+            margin-top:32px; min-width:214px; min-height:50px;
+            display:inline-flex; align-items:center; justify-content:center; gap:9px;
+            padding:14px 26px; border-radius:999px;
+            font-family:'Jost',sans-serif; font-size:.76rem; letter-spacing:.18em; text-transform:uppercase;
+            color:#fff7e9; background:#c98b86; border:none; cursor:pointer;
+            box-shadow:0 14px 28px -14px rgba(201,139,134,.95);
+            transition:transform .2s ease, box-shadow .25s ease, background .3s ease;
+        }
+        .op-btn[disabled] { background:#dcc8c2; cursor:default; box-shadow:none; }
+        .op-btn.ready { animation:opfloat 2.2s ease-in-out infinite; }
+        .op-btn.ready:active { transform:scale(.96); }
+        @keyframes opfloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+        .op-btn-load { display:inline-flex; align-items:center; gap:10px; }
+        .op-btn-text { display:none; align-items:center; gap:8px; }
+        .op-btn.ready .op-btn-load { display:none; }
+        .op-btn.ready .op-btn-text { display:inline-flex; }
+        .op-spin {
+            width:15px; height:15px; border-radius:50%;
+            border:2px solid rgba(255,247,233,.5); border-top-color:#fff7e9;
+            animation:opspin .8s linear infinite;
+        }
+        @keyframes opspin { to { transform:rotate(360deg); } }
+
+        /* ---- countdown overlay (over the first video frame) ---- */
+        .intro-overlay {
+            position:absolute; inset:0; z-index:6;
+            display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+            text-align:center; padding:24px; color:#fff7e9;
+            background:rgba(40,30,20,.34);
+            -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+            transition:opacity .6s ease;
+        }
+        .intro-overlay.hide { opacity:0; pointer-events:none; }
+        .cd-ring { position:relative; width:150px; height:150px; }
+        .cd-ring svg { width:100%; height:100%; transform:rotate(-90deg); }
+        .cd-track { fill:none; stroke:rgba(255,247,233,.22); stroke-width:4; }
+        .cd-prog {
+            fill:none; stroke:#fff7e9; stroke-width:4; stroke-linecap:round;
+            stroke-dasharray:339.292; stroke-dashoffset:0;
+            filter:drop-shadow(0 0 6px rgba(255,247,233,.5));
+        }
+        .cd-ring.run .cd-prog { animation:cdsweep 3s linear forwards; }
+        @keyframes cdsweep { to { stroke-dashoffset:339.292; } }
+        .cd-number {
+            position:absolute; top:40%; left:50%; transform:translate(-50%, -50%);
+            font-family:'Cormorant Garamond',serif; font-weight:600; line-height:1;
+            font-size:5.2rem; text-shadow:0 4px 18px rgba(0,0,0,.5);
+            white-space:nowrap;
+        }
+        .cd-number.pop { animation:cdpop .55s cubic-bezier(.2,.9,.3,1.4); }
+        @keyframes cdpop { 0%{transform:translate(-50%, -50%) scale(.55);opacity:0} 45%{transform:translate(-50%, -50%) scale(1.12);opacity:1} 100%{transform:translate(-50%, -50%) scale(1)} }
+        .cd-label {
+            font-family:'Jost',sans-serif; font-size:.72rem; letter-spacing:.28em; text-transform:uppercase;
+            text-shadow:0 2px 10px rgba(0,0,0,.55);
+        }
+
+        /* reveal on scroll */
+        .reveal { opacity:0; transform:translateY(26px); transition:opacity .9s ease, transform .9s ease; }
+        .reveal.in { opacity:1; transform:none; }
+        .d1{transition-delay:.10s}.d2{transition-delay:.20s}.d3{transition-delay:.30s}.d4{transition-delay:.40s}
+
+        /* gentle floating for accents */
+        @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+        .floaty { animation:floaty 6s ease-in-out infinite; }
+
+        /* floating background-music toggle */
+        .sound-toggle{
+            position:fixed; right:16px; bottom:16px; z-index:50;
+            width:44px; height:44px; border-radius:999px;
+            display:grid; place-items:center; cursor:pointer;
+            color:#fff7e9; background:rgba(201,139,134,.92);
+            border:1px solid rgba(255,247,233,.5);
+            box-shadow:0 6px 18px rgba(71,60,48,.35);
+            -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+            -webkit-tap-highlight-color:transparent;
+        }
+        .sound-toggle:active{ transform:scale(.93); }
+        .sound-toggle svg{ width:20px; height:20px; }
+        .sound-toggle .ico-on{ display:none; }
+        .sound-toggle[data-on="1"] .ico-on{ display:block; }
+        .sound-toggle[data-on="1"] .ico-off{ display:none; }
+        .sound-toggle[data-on="1"]::after{
+            content:""; position:absolute; inset:-4px; border-radius:999px;
+            border:2px solid rgba(201,139,134,.5);
+            animation:bgmpulse 2s ease-out infinite;
+        }
+        @keyframes bgmpulse{ 0%{transform:scale(.85);opacity:.7} 100%{transform:scale(1.25);opacity:0} }
+
+        @media (prefers-reduced-motion: reduce){
+            .reveal{opacity:1;transform:none}
+            .floaty,.op-btn.ready{animation:none}
+            .sound-toggle[data-on="1"]::after{animation:none}
+        }
+    </style>
+</head>
+
+<body class="bg-cream font-serif text-cocoa">
+
+    <!-- ============ OPENING COVER (loading → tap to open) ============ -->
+    <div class="opening" id="opening">
+        <div class="op-card">
+            <p class="op-eyebrow">The Wedding Of</p>
+            <h1 class="op-names">Fikri &amp; Ayu</h1>
+            <div class="op-divider"></div>
+            <p class="op-date">01 . 07 . 2026</p>
+            <button class="op-btn" id="openBtn" type="button" disabled aria-label="Buka undangan">
+                <span class="op-btn-load" id="openLoad"><span class="op-spin"></span>Memuat undangan…</span>
+                <span class="op-btn-text">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+                         stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px" aria-hidden="true">
+                        <rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4 7l8 5 8-5"/>
+                    </svg>
+                    Buka Undangan
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ BACKGROUND MUSIC (ambiance) ============ -->
+    <audio id="bgm" src="backsound.mp3" loop preload="auto"></audio>
+    <button id="soundToggle" class="sound-toggle" type="button" data-on="0"
+            aria-label="Putar atau hentikan musik latar">
+        <!-- sound on -->
+        <svg class="ico-on" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4z"/>
+            <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+            <path d="M18.5 6a8 8 0 0 1 0 12"/>
+        </svg>
+        <!-- sound off -->
+        <svg class="ico-off" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4z"/>
+            <path d="M16 9.5l5 5M21 9.5l-5 5"/>
+        </svg>
+    </button>
+
+    <!-- ============ AUTO INTRO VIDEO (countdown → play → reveal) ============ -->
+    <div class="video-scroll" id="videoScroll">
+        <div class="video-pin">
+            <video id="introVideo" playsinline muted preload="auto"
+                   src="Putri & Fikri Wedding.mp4"></video>
+            <div class="intro-overlay" id="introOverlay">
+                <div class="cd-ring" id="cdRing">
+                    <svg viewBox="0 0 120 120" aria-hidden="true">
+                        <circle class="cd-track" cx="60" cy="60" r="54"/>
+                        <circle class="cd-prog"  cx="60" cy="60" r="54"/>
+                    </svg>
+                    <span class="cd-number pop" id="countdown">3</span>
+                </div>
+                <span class="cd-label">Undangan akan dimulai…</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ WEBSITE CONTENT ============ -->
+    <main class="relative z-10 bg-cream">
+
+        <!-- ========== 1. HERO ========== -->
+        <section class="relative overflow-hidden px-6 pt-20 pb-24 text-center">
+            <img src="svg/corner-floral.svg" alt="" loading="lazy"
+                 class="pointer-events-none absolute -top-3 -left-3 w-28 sm:w-44 opacity-90 floaty">
+            <img src="svg/corner-floral.svg" alt="" loading="lazy"
+                 class="pointer-events-none absolute -bottom-3 -right-3 w-28 sm:w-44 opacity-90 -scale-x-100 -scale-y-100">
+
+            <div class="relative mx-auto max-w-md">
+                <p class="reveal font-sans text-[0.7rem] tracking-[0.4em] uppercase text-mocha">The Wedding Of</p>
+
+                <img src="svg/rings.svg" alt="" loading="lazy" class="reveal d1 mx-auto mt-5 w-16 floaty">
+
+                <h1 class="reveal d1 font-script leading-[1.1] text-cocoa mt-3 text-[clamp(2.1rem,9vw,3.2rem)]">Putri Ayu Maulidya</h1>
+                <p class="reveal d1 font-script text-gold text-3xl my-1">&amp;</p>
+                <h1 class="reveal d1 font-script leading-[1.1] text-cocoa text-[clamp(2.1rem,9vw,3.2rem)]">Fikri Ardiansyah</h1>
+
+                <!-- couple photo (arched frame) -->
+                <div class="reveal d2 relative mx-auto mt-9 w-60 sm:w-64">
+                    <div class="rounded-t-[120px] rounded-b-3xl bg-cream p-2 border border-beige shadow-[0_18px_40px_-20px_rgba(71,60,48,.55)]">
+                        <img src="foto-mempelai.jpeg" alt="Fikri &amp; Ayu" loading="lazy"
+                             class="w-full aspect-[4/5] object-cover rounded-t-[112px] rounded-b-2xl">
+                    </div>
+                    <img src="svg/sprig.svg" alt="" class="pointer-events-none absolute -bottom-3 -left-4 w-9 opacity-80">
+                    <img src="svg/sprig.svg" alt="" class="pointer-events-none absolute -bottom-3 -right-4 w-9 opacity-80 -scale-x-100">
+                </div>
+
+                <img src="svg/divider.svg" alt="" loading="lazy" class="reveal d2 mx-auto my-7 w-52">
+
+                <p class="reveal d2 italic text-mocha text-lg leading-relaxed px-2">
+                    “Maha Suci Allah yang telah menciptakan makhluk-Nya berpasang-pasangan,
+                    Ya Allah semoga ridho-Mu tercurah mengiringi pernikahan putra-putri kami.”
+                </p>
+
+                <a href="#mempelai" class="reveal d3 mt-9 inline-flex flex-col items-center gap-2 text-mocha">
+                    <span class="font-sans text-[0.65rem] tracking-[0.3em] uppercase">Lihat Undangan</span>
+                    <span class="grid h-9 w-9 place-items-center rounded-full border border-rose/60 text-rose animate-bounce">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 9l6 6 6-6"/>
+                        </svg>
+                    </span>
+                </a>
+            </div>
+        </section>
+
+        <!-- ========== 2. KEDUA MEMPELAI — CAROUSEL FOTO (full section) ========== -->
+        <section id="mempelai" class="relative w-full h-[88vh] min-h-[460px] overflow-hidden bg-cocoa">
+            <div id="carousel" class="absolute inset-0">
+                <img src="foto-kedua-mempelai/foto-1.jpeg" alt="Fikri &amp; Ayu"
+                     class="cs-slide absolute inset-0 h-full w-full object-cover opacity-100 transition-opacity duration-[1200ms] ease-in-out">
+                <img src="foto-kedua-mempelai/foto-2.jpeg" alt="Fikri &amp; Ayu" loading="lazy"
+                     class="cs-slide absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-[1200ms] ease-in-out">
+                <img src="foto-kedua-mempelai/foto-3.jpeg" alt="Fikri &amp; Ayu" loading="lazy"
+                     class="cs-slide absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-[1200ms] ease-in-out">
+            </div>
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/45 to-transparent"></div>
+            <div id="csDots" class="absolute inset-x-0 bottom-5 flex justify-center gap-2.5">
+                <button aria-label="Foto 1" class="cs-dot h-2 w-2 rounded-full" style="background:rgba(255,255,255,.95)"></button>
+                <button aria-label="Foto 2" class="cs-dot h-2 w-2 rounded-full" style="background:rgba(255,255,255,.4)"></button>
+                <button aria-label="Foto 3" class="cs-dot h-2 w-2 rounded-full" style="background:rgba(255,255,255,.4)"></button>
+            </div>
+        </section>
+
+        <!-- ========== 2b. INFORMASI MEMPELAI ========== -->
+        <section class="relative overflow-hidden bg-sand px-6 py-16">
+            <img src="svg/sprig.svg" alt="" loading="lazy" class="pointer-events-none absolute top-6 right-5 w-9 opacity-70">
+            <div class="mx-auto max-w-md text-center">
+                <p class="reveal font-sans text-[0.7rem] tracking-[0.4em] uppercase text-mocha mb-2">Kedua Mempelai</p>
+                <img src="svg/divider.svg" alt="" loading="lazy" class="reveal mx-auto mb-8 w-44">
+
+                <h2 class="reveal d1 font-script text-[clamp(2rem,8.5vw,3rem)] text-cocoa leading-tight">Putri Ayu Maulidya</h2>
+                <p class="reveal d1 mt-2 text-mocha text-lg leading-relaxed">
+                    Putri bungsu dari<br>
+                    <span class="font-medium text-cocoa">Bpk. Abu Bakar (Alm) &amp; Ibu Unah</span>
+                </p>
+
+                <p class="reveal d2 font-script text-gold text-5xl my-6">&amp;</p>
+
+                <h2 class="reveal d2 font-script text-[clamp(2rem,8.5vw,3rem)] text-cocoa leading-tight">Fikri Ardiansyah</h2>
+                <p class="reveal d2 mt-2 text-mocha text-lg leading-relaxed">
+                    Putra kedua dari<br>
+                    <span class="font-medium text-cocoa">Bpk. Sulaeman (Eman) &amp; Ibu Yani Shyn</span>
+                </p>
+            </div>
+        </section>
+
+        <!-- ========== 3. DETAIL ACARA ========== -->
+        <section class="relative overflow-hidden px-6 py-20">
+            <img src="svg/corner-floral.svg" alt="" loading="lazy"
+                 class="pointer-events-none absolute -top-2 -right-2 w-24 sm:w-36 opacity-80 -scale-x-100">
+            <div class="mx-auto max-w-md text-center">
+                <p class="reveal font-sans text-[0.7rem] tracking-[0.4em] uppercase text-mocha mb-2">Detail Acara</p>
+                <h3 class="reveal font-script text-5xl text-cocoa">Resepsi</h3>
+                <img src="svg/divider.svg" alt="" loading="lazy" class="reveal mx-auto my-7 w-44">
+
+                <div class="reveal d1 rounded-3xl bg-sand border border-beige shadow-sm px-7 py-9">
+                    <p class="font-script text-4xl text-cocoa">Rabu</p>
+
+                    <!-- date 01 · 07 · 26 -->
+                    <div class="my-5 flex items-stretch justify-center gap-3 text-cocoa">
+                        <div class="flex flex-col items-center justify-center rounded-2xl bg-blush/40 border border-blush w-16 py-3">
+                            <span class="text-2xl font-medium leading-none">01</span>
+                            <span class="font-sans text-[0.6rem] tracking-widest uppercase mt-1 text-mocha">Tgl</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center rounded-2xl bg-peach/50 border border-peach w-16 py-3">
+                            <span class="text-2xl font-medium leading-none">07</span>
+                            <span class="font-sans text-[0.6rem] tracking-widest uppercase mt-1 text-mocha">Juli</span>
+                        </div>
+                        <div class="flex flex-col items-center justify-center rounded-2xl bg-beige border border-beige w-16 py-3">
+                            <span class="text-2xl font-medium leading-none">26</span>
+                            <span class="font-sans text-[0.6rem] tracking-widest uppercase mt-1 text-mocha">2026</span>
+                        </div>
+                    </div>
+
+                    <p class="text-lg text-mocha">Pukul <span class="font-medium text-cocoa">09.00 WIB</span> s/d Selesai</p>
+
+                    <div class="my-6 h-px bg-beige"></div>
+
+                    <div class="flex items-start justify-center gap-2 text-mocha">
+                        <svg class="mt-1 w-5 h-5 shrink-0 text-rose" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                        </svg>
+                        <p class="text-lg leading-relaxed text-left">
+                            Ciherang Rawakalong RT 04 / RW 08,<br>
+                            Desa Ciherang, Kec. Dramaga,<br>Kab. Bogor
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== 4. LOKASI ACARA ========== -->
+        <section class="relative overflow-hidden bg-sand px-6 py-20">
+            <img src="svg/sprig.svg" alt="" loading="lazy" class="pointer-events-none absolute top-6 left-5 w-9 opacity-70">
+            <div class="mx-auto max-w-md text-center">
+                <p class="reveal font-sans text-[0.7rem] tracking-[0.4em] uppercase text-mocha mb-2">Lokasi Acara</p>
+                <h3 class="reveal font-script text-5xl text-cocoa">Barcode Lokasi</h3>
+                <img src="svg/divider.svg" alt="" loading="lazy" class="reveal mx-auto my-7 w-44">
+
+                <div class="reveal d1 rounded-3xl bg-cream/80 border border-beige shadow-sm p-7">
+                    <!-- QR: tampilkan QR asli dari undangan jika tersedia (simpan crop QR sebagai qr-lokasi.png).
+                         Jika file tidak ada, otomatis fallback ke QR yang dibuat dari titik koordinat Google Maps.
+                         CATATAN: isi/target QR pada gambar undangan perlu dikonfirmasi pemilik. -->
+                    <img id="qrImg" alt="QR Code Lokasi Acara" loading="lazy"
+                         src="qr-lokasi.png"
+                         onerror="this.onerror=null;this.src='https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=8&data='+encodeURIComponent('https://www.google.com/maps?q=-6.5805833,106.7406111');"
+                         class="mx-auto w-44 h-44 rounded-xl bg-white p-2 border border-beige object-contain">
+
+                    <p class="mt-5 text-mocha leading-relaxed">
+                        <span class="font-medium text-cocoa">Alamat:</span><br>
+                        Ciherang Rawakalong RT04/08,<br>
+                        Desa Ciherang Kec. Dramaga Kab. Bogor
+                    </p>
+
+                    <a href="https://www.google.com/maps?q=-6.5805833,106.7406111" target="_blank" rel="noopener"
+                       class="mt-6 inline-flex items-center gap-2 rounded-full bg-rose px-6 py-3 font-sans text-sm tracking-wide text-cream shadow-sm active:scale-95 transition">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                            <path d="M12 21s7-6.3 7-11a7 7 0 1 0-14 0c0 4.7 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>
+                        </svg>
+                        Buka Lokasi
+                    </a>
+
+                    <!-- embed map (lazy) -->
+                    <div class="mt-6 overflow-hidden rounded-2xl border-4 border-cream shadow-sm">
+                        <iframe title="Peta Lokasi" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                            class="w-full h-56 block"
+                            style="filter:sepia(.15) saturate(1.05)"
+                            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3767.4197747694234!2d106.7406111!3d-6.5805833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNsKwMzQnNTAuMSJTIDEwNsKwNDQnMjYuMiJF!5e1!3m2!1sen!2sid!4v1781939885136!5m2!1sen!2sid"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== 5. TURUT MENGUNDANG ========== -->
+        <section class="relative overflow-hidden px-6 py-20">
+            <img src="svg/corner-floral.svg" alt="" loading="lazy"
+                 class="pointer-events-none absolute -bottom-3 -left-3 w-24 sm:w-36 opacity-80 -scale-y-100">
+            <div class="mx-auto max-w-md">
+                <div class="text-center">
+                    <p class="reveal font-sans text-[0.7rem] tracking-[0.4em] uppercase text-mocha mb-2">Turut Mengundang</p>
+                    <img src="svg/divider.svg" alt="" loading="lazy" class="reveal mx-auto mb-9 w-44">
+                </div>
+
+                <ul class="reveal d1 grid grid-cols-1 gap-2.5">
+                    <!-- data persis dari gambar undangan (bagian belakang) -->
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Suherwin <span class="text-mocha text-base">(Kepala Desa Ciherang)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Dedi <span class="text-mocha text-base">(Ketua RW 08)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Wanda <span class="text-mocha text-base">(Ketua RT 04)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. H. Halimi <span class="text-mocha text-base">(Tokoh Agama)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Ustadz Holil <span class="text-mocha text-base">(Tokoh Agama)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Ustadz Asep <span class="text-mocha text-base">(Tokoh Agama)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. H. Badri <span class="text-mocha text-base">(DKM 08)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Hasan Warung <span class="text-mocha text-base">(Adik)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Empi Warung <span class="text-mocha text-base">(Adik)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Cecep Ompong</span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Atif</span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Kamal <span class="text-mocha text-base">(Ketua Remaja 08)</span></span>
+                    </li>
+                    <li class="flex items-center gap-3 rounded-xl bg-sand/70 border border-beige px-4 py-3">
+                        <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose"></span>
+                        <span class="text-cocoa">Bpk. Ucin <span class="text-mocha text-base">(Bos Konveksi)</span></span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ========== 6. UCAPAN PENUTUP ========== -->
+        <section class="relative overflow-hidden bg-sand px-6 py-20 text-center">
+            <img src="svg/corner-floral.svg" alt="" loading="lazy"
+                 class="pointer-events-none absolute -top-3 -left-3 w-24 sm:w-36 opacity-80">
+            <div class="mx-auto max-w-md">
+                <img src="svg/letter-svgrepo-com.svg" alt="" loading="lazy" class="reveal mx-auto w-12 opacity-90">
+                <p class="reveal font-sans text-[0.7rem] tracking-[0.4em] uppercase text-mocha mt-4 mb-5">Assalamualaikum Wr. Wb.</p>
+
+                <p class="reveal d1 italic text-mocha text-lg leading-relaxed px-1">
+                    Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila
+                    Bapak / Ibu / Saudara(i) berkenan hadir untuk memberikan
+                    do’a restu kepada kedua mempelai.
+                </p>
+
+                <p class="reveal d2 font-sans text-[0.7rem] tracking-[0.4em] uppercase text-mocha mt-7">Wassalamualaikum Wr. Wb.</p>
+                <img src="svg/divider.svg" alt="" loading="lazy" class="reveal d2 mx-auto my-7 w-44">
+
+                <p class="reveal d3 font-sans text-[0.65rem] tracking-[0.35em] uppercase text-mocha">Hormat Kami</p>
+                <div class="reveal d3 mt-4 space-y-2 text-cocoa text-lg">
+                    <p>Kel. Bpk Sulaeman (Eman) &amp; Ibu Yani Shyn</p>
+                    <p>Kel. Bpk Hadi Irawan (Dihol) &amp; Ibu Unah</p>
+                </div>
+
+                <p class="reveal d3 font-script text-5xl text-cocoa mt-8">Fikri &amp; Ayu</p>
+            </div>
+        </section>
+
+        <!-- ========== 7. FOOTER ========== -->
+        <footer class="relative overflow-hidden bg-cream px-6 pt-14 pb-12 text-center">
+            <img src="svg/sprig.svg" alt="" loading="lazy" class="mx-auto w-8 opacity-70 mb-4">
+            <p class="font-script text-4xl text-cocoa">Fikri &amp; Ayu</p>
+            <p class="font-sans text-[0.7rem] tracking-[0.3em] uppercase text-mocha mt-3">01 . 07 . 2026</p>
+            <div class="mx-auto my-6 h-px w-24 bg-beige"></div>
+            <p class="font-sans text-[0.65rem] tracking-wide text-mocha/80">
+                &copy; 2026 Pernikahan Fikri &amp; Ayu. Dibuat dengan
+                <img src="svg/heart.svg" alt="cinta" class="inline w-3.5 -mt-0.5"> .
+            </p>
+        </footer>
+    </main>
+
+    <script>
+        /* ---------- intro: loading → 3s countdown → video plays (page auto-scrolls) → reveal content ---------- */
+        const video = document.getElementById('introVideo');
+        const videoScroll = document.getElementById('videoScroll');
+        const overlay = document.getElementById('introOverlay');
+        const countdownEl = document.getElementById('countdown');
+        const cdRing = document.getElementById('cdRing');
+        const opening = document.getElementById('opening');
+        const openBtn = document.getElementById('openBtn');
+        const openLoad = document.getElementById('openLoad');
+        const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+        /* --- lock scrolling for the whole intro --- */
+        const blockMove = e => e.preventDefault();
+        const scrollKeys = new Set([' ','Spacebar','PageDown','PageUp','ArrowDown','ArrowUp','Home','End']);
+        const blockKeys = e => { if (scrollKeys.has(e.key)) e.preventDefault(); };
+        function lockScroll() {
+            window.scrollTo(0, 0);
+            addEventListener('wheel', blockMove, { passive:false });
+            addEventListener('touchmove', blockMove, { passive:false });
+            addEventListener('keydown', blockKeys, { passive:false });
+        }
+        function unlockScroll() {
+            removeEventListener('wheel', blockMove, { passive:false });
+            removeEventListener('touchmove', blockMove, { passive:false });
+            removeEventListener('keydown', blockKeys, { passive:false });
+        }
+
+        // eased programmatic scroll, so we control the pace into the content
+        function animateScrollTo(toY, dur, done) {
+            const fromY = window.scrollY, dist = toY - fromY, t0 = performance.now();
+            const ease = t => 1 - Math.pow(1 - t, 3);   // easeOutCubic
+            (function step(now) {
+                const t = Math.min((now - t0) / dur, 1);
+                window.scrollTo(0, fromY + dist * ease(t));
+                if (t < 1) requestAnimationFrame(step); else done && done();
+            })(t0);
+        }
+
+        // while the video plays, move the page in sync with its progress (no seeking → no jitter)
+        let driving = false;
+        function driveLoop() {
+            if (!driving) return;
+            const range = Math.max(videoScroll.offsetHeight - window.innerHeight, 1);
+            const progress = video.duration ? Math.min(video.currentTime / video.duration, 1) : 0;
+            window.scrollTo(0, progress * range);
+            requestAnimationFrame(driveLoop);
+        }
+
+        function revealContent() {
+            driving = false;
+            animateScrollTo(videoScroll.offsetHeight, 1100, unlockScroll);  // glide into the hero
+        }
+
+        function playIntro() {
+            overlay.classList.add('hide');
+            try { video.currentTime = 0; } catch (_) {}
+            const p = video.play();
+            const begin = () => { driving = true; requestAnimationFrame(driveLoop); };
+            if (p && p.then) p.then(begin).catch(revealContent);   // playback blocked → just show content
+            else begin();
+        }
+        video.addEventListener('ended', revealContent);
+
+        function runCountdown() {
+            cdRing.classList.add('run');                 // start the 3s ring sweep
+            let n = 3;
+            const tick = () => {
+                countdownEl.textContent = n;
+                countdownEl.classList.remove('pop'); void countdownEl.offsetWidth; countdownEl.classList.add('pop');
+            };
+            tick();
+            const iv = setInterval(() => {
+                if (--n <= 0) { clearInterval(iv); playIntro(); return; }
+                tick();
+            }, 1000);
+        }
+
+        /* --- the opening tap: this user gesture is what finally lets the music play --- */
+        function startFlow() {
+            startBgm();                                  // ← music actually starts here
+            opening.classList.add('hide');
+            runCountdown();
+        }
+        openBtn.addEventListener('click', () => { if (!openBtn.disabled) startFlow(); });
+
+        /* --- loading: download the whole video first, then enable "Buka Undangan" --- */
+        function setLoad(frac) {
+            openLoad.lastChild.nodeValue = frac ? ('Memuat… ' + Math.round(frac * 100) + '%') : 'Memuat undangan…';
+        }
+        let ready = false;
+        function markReady() {
+            if (ready) return;
+            ready = true;
+            openBtn.disabled = false;
+            openBtn.classList.add('ready');
+        }
+        async function loadVideo() {
+            try {
+                const res = await fetch(encodeURI(video.getAttribute('src')));
+                if (!res.ok || !res.body) throw 0;
+                const total = +res.headers.get('Content-Length') || 0;
+                const reader = res.body.getReader();
+                const chunks = []; let received = 0;
+                for (;;) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    chunks.push(value); received += value.length;
+                    setLoad(total ? received / total : 0);
+                }
+                video.src = URL.createObjectURL(new Blob(chunks, { type: 'video/mp4' }));
+                await new Promise(r => {
+                    if (video.readyState >= 3) return r();
+                    video.addEventListener('canplay', r, { once: true });
+                    video.load();
+                });
+                markReady();
+            } catch (_) {
+                // fetch unavailable (e.g. opened from file://) → fall back to the browser's buffering
+                const onProg = () => {
+                    if (video.duration && video.buffered.length)
+                        setLoad(Math.min(video.buffered.end(video.buffered.length - 1) / video.duration, 1));
+                };
+                video.addEventListener('progress', onProg);
+                video.addEventListener('canplaythrough', markReady, { once: true });
+                setTimeout(markReady, 8000);             // safety net so the button can never get stuck
+            }
+        }
+
+        if (prefersReduced) {
+            opening.classList.add('hide');               // accessibility: skip the intro entirely
+            overlay.classList.add('hide');
+            window.scrollTo(0, videoScroll.offsetHeight);
+        } else {
+            lockScroll();
+            loadVideo();
+        }
+
+        /* ---------- background music (ambiance, loops) ---------- */
+        const bgm = document.getElementById('bgm');
+        const soundBtn = document.getElementById('soundToggle');
+        const BGM_VOL = 0.55;
+        let bgmReady = false;
+
+        function fadeTo(target) {
+            clearInterval(bgm._fade);
+            bgm._fade = setInterval(() => {
+                const d = target - bgm.volume;
+                if (Math.abs(d) < 0.02) { bgm.volume = Math.max(0, Math.min(1, target)); clearInterval(bgm._fade); }
+                else bgm.volume = Math.max(0, Math.min(1, bgm.volume + d * 0.15));
+            }, 40);
+        }
+        function setBtn(on) { soundBtn.dataset.on = on ? '1' : '0'; }
+
+        // browsers block audible autoplay until a gesture — start on the first interaction
+        const unlockEvents = ['pointerdown','touchstart','click','keydown','wheel','scroll'];
+        const unlock = () => startBgm();
+        function removeUnlock() { unlockEvents.forEach(ev => window.removeEventListener(ev, unlock)); }
+
+        function startBgm() {
+            if (bgmReady) return;
+            bgm.volume = 0;
+            const p = bgm.play();
+            if (p && p.then) {
+                p.then(() => { bgmReady = true; setBtn(true); fadeTo(BGM_VOL); removeUnlock(); })
+                 .catch(() => {/* still blocked → wait for the next gesture */});
+            }
+        }
+
+        unlockEvents.forEach(ev => window.addEventListener(ev, unlock, { passive: true }));
+        startBgm();                           // optimistic: works where autoplay is already allowed
+
+        soundBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (bgm.paused) { bgm.play().catch(()=>{}); bgmReady = true; setBtn(true); fadeTo(BGM_VOL); }
+            else { fadeTo(0); setTimeout(() => bgm.pause(), 400); setBtn(false); }
+        });
+
+        /* ---------- reveal on scroll ---------- */
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+        /* ---------- mempelai photo carousel (auto) ---------- */
+        (function(){
+            const slides = [...document.querySelectorAll('.cs-slide')];
+            const dots   = [...document.querySelectorAll('.cs-dot')];
+            if (!slides.length) return;
+            let i = 0, timer;
+            const show = (n) => {
+                i = (n + slides.length) % slides.length;
+                slides.forEach((s, k) => s.style.opacity = k === i ? '1' : '0');
+                dots.forEach((d, k) => d.style.background = k === i ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.4)');
+            };
+            const start = () => { timer = setInterval(() => show(i + 1), 4000); };
+            const reset = () => { clearInterval(timer); start(); };
+            dots.forEach((d, k) => d.addEventListener('click', () => { show(k); reset(); }));
+            show(0); start();
+        })();
+    </script>
+</body>
+</html>

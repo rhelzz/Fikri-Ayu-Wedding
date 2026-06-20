@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none">
+  <!-- stems -->
+  <g stroke="#9aa97f" stroke-width="2.1" stroke-linecap="round">
+    <path d="M14 24 C80 44 140 98 172 200"/>
+    <path d="M42 38 C38 22 26 17 14 21"/>
+    <path d="M68 62 C64 45 51 39 39 43"/>
+    <path d="M96 94 C94 75 82 68 68 70"/>
+    <path d="M124 132 C124 110 112 103 98 105"/>
+    <path d="M152 180 C154 158 144 148 130 150"/>
+  </g>
+  <!-- eucalyptus leaves -->
+  <g fill="#c2cda6" stroke="#9aa97f" stroke-width="1.3">
+    <ellipse cx="32" cy="30" rx="11" ry="6.4" transform="rotate(-34 32 30)"/>
+    <ellipse cx="56" cy="52" rx="11" ry="6.4" transform="rotate(-30 56 52)"/>
+    <ellipse cx="84" cy="82" rx="12" ry="7"   transform="rotate(-25 84 82)"/>
+    <ellipse cx="112" cy="120" rx="12" ry="7" transform="rotate(-19 112 120)"/>
+    <ellipse cx="140" cy="166" rx="12" ry="7" transform="rotate(-13 140 166)"/>
+    <ellipse cx="166" cy="206" rx="11" ry="6.4" transform="rotate(-8 166 206)"/>
+  </g>
+  <!-- blush flower 1 -->
+  <g transform="translate(150,150)">
+    <g fill="#ecc9c0" stroke="#cf9d94" stroke-width="1.2">
+      <ellipse cx="0" cy="-12" rx="6" ry="10"/>
+      <ellipse cx="11" cy="-4" rx="6" ry="10" transform="rotate(72)"/>
+      <ellipse cx="7" cy="10" rx="6" ry="10" transform="rotate(144)"/>
+      <ellipse cx="-7" cy="10" rx="6" ry="10" transform="rotate(216)"/>
+      <ellipse cx="-11" cy="-4" rx="6" ry="10" transform="rotate(288)"/>
+    </g>
+    <circle r="5" fill="#e7b27f" stroke="#cf9d94" stroke-width="1"/>
+  </g>
+  <!-- peach flower 2 (smaller) -->
+  <g transform="translate(196,196) scale(0.8)">
+    <g fill="#f2d6bd" stroke="#dca97f" stroke-width="1.2">
+      <ellipse cx="0" cy="-12" rx="6" ry="10"/>
+      <ellipse cx="11" cy="-4" rx="6" ry="10" transform="rotate(72)"/>
+      <ellipse cx="7" cy="10" rx="6" ry="10" transform="rotate(144)"/>
+      <ellipse cx="-7" cy="10" rx="6" ry="10" transform="rotate(216)"/>
+      <ellipse cx="-11" cy="-4" rx="6" ry="10" transform="rotate(288)"/>
+    </g>
+    <circle r="5" fill="#e7b27f" stroke="#dca97f" stroke-width="1"/>
+  </g>
+</svg>
